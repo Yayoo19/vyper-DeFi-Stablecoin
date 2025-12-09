@@ -6,7 +6,9 @@
 
 from snekmate.tokens import erc20
 from snekmate.auth import ownable as ow
+from interfaces import i_decentralized_stablecoin
 
+implements: i_decentralized_stablecoin
 initializes: ow
 initializes: erc20[ownable:= ow]
 
