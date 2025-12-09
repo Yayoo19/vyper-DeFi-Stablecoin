@@ -1,0 +1,14 @@
+#pragma version 0.4.3
+#SPDX-License-Identifier: MIT
+#@Author: Yayoo19
+#@title: Interface for Decentralized Stablecoin
+
+@external
+def burn_from(owner: address, amount: uint256):
+    ...
+
+@external
+def mint(owner: address, amount: uint256):
+    ...
+
+    
