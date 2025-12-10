@@ -1,0 +1,20 @@
+#interface to call contract price feed from chainlink.
+@external
+@view
+def decimals() -> int8:
+    ...
+
+@external
+@view
+def description() -> String[10000]:
+    ...
+
+@external
+@view
+def version() -> int256:
+    ...
+
+@external
+@view
+def latestAnswer() -> int256:
+    ...
