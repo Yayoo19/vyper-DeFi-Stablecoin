@@ -65,6 +65,13 @@ def redeem_collateral(token_collateral_address: address, amount_collateral: uint
     self._redeem_collateral(token_collateral_address, amount_collateral, msg.sender, msg.sender)
     self._revert_if_health_factor_broken(msg.sender)
 
+@external
+def deposit_and_mint(token_collateral_address: address, amount_collateral: uint256, amount_dsc_to_mint: uint256):
+    self._deposit_collateral(token_collateral_address, amount_collateral)
+    self._mint_dsc(amount_dsc_to_mint)
+    
+    
+
 # ------------------------------------------------------------------
 #                        INTERNAL FUNCTIONS
 # ------------------------------------------------------------------
