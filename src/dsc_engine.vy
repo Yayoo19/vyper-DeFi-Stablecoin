@@ -61,6 +61,7 @@ def mint_dsc(amount: uint256):
     self._mint_dsc(amount)
 
 @external
+def redeem_collateral(token_collateral_address: address, amount_collateral: uint256):
     self._redeem_collateral(token_collateral_address, amount_collateral, msg.sender, msg.sender)
     self._revert_if_health_factor_broken(msg.sender)
 
