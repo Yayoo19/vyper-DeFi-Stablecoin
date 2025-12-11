@@ -33,6 +33,11 @@ event CollateralDeposited:
     user: indexed(address)
     amount: indexed(uint256)
 
+event CollateralRedeemed:
+    token: indexed(address)
+    amount: indexed(uint256)
+    _from: address
+    _to: address
 # ------------------------------------------------------------------
 #                        EXTERNAL FUNCTIONS
 # ------------------------------------------------------------------
@@ -55,9 +60,20 @@ def deposit_collateral(token_collateral_address: address, amount_collateral: uin
 def mint_dsc(amount: uint256):
     self._mint_dsc(amount)
 
+@external
+    self._redeem_collateral(token_collateral_address, amount_collateral, msg.sender, msg.sender)
+    self._revert_if_health_factor_broken(msg.sender)
+
 # ------------------------------------------------------------------
 #                        INTERNAL FUNCTIONS
 # ------------------------------------------------------------------
+
+@internal 
+def _redeem_collateral(token_collateral_address: address, amount_collateral: uint256, _from:address, to:address):
+    self.user_to_token_to_amount_deposited[_from][token_collateral_address] -= amount_collateral
+    log CollateralRedeemed(token=token_collateral_address, amount=amount_collateral, _from=_from, _to=to)
+    sucess: bool = extcall IERC20(token_collateral_address).transfer(to, amount_collateral)
+    assert sucess, "DSC Engine: Transfer failed"
 
 @internal
 def _deposit_collateral(token_collateral_address: address, amount_collateral: uint256):
