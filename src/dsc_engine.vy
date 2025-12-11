@@ -70,7 +70,11 @@ def deposit_and_mint(token_collateral_address: address, amount_collateral: uint2
     self._deposit_collateral(token_collateral_address, amount_collateral)
     self._mint_dsc(amount_dsc_to_mint)
     
-    
+@external
+def redeem_dsc(token_collateral_address: address, amount_collateral: uint256, amount_dsc_to_burn: uint256):
+    self._burn_dsc(amount_dsc_to_burn, msg.sender, msg.sender)
+    self._redeem_collateral(token_collateral_address, amount_collateral, msg.sender, msg.sender)
+    self._revert_if_health_factor_broken(msg.sender)
 
 # ------------------------------------------------------------------
 #                        INTERNAL FUNCTIONS
@@ -106,7 +110,10 @@ def _revert_if_health_factor_broken(user: address):
     user_health_factor: uint256 = self._health_factor(user)
     assert user_health_factor >= MIN_HEALTH_FACTOR, "DSC Engine: User health factor is too low"
 
-    
+@internal
+def _burn_dsc(amount_dsc_to_burn: uint256, on_behalf_of: address, dsc_from:address):
+    self.user_to_dsc_minted[on_behalf_of] -= amount_dsc_to_burn
+    extcall DSC.burn_from(dsc_from, amount_dsc_to_burn)
 
 @internal
 def _get_account_information(user: address) -> (uint256, uint256):
