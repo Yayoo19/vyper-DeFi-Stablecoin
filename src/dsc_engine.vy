@@ -76,6 +76,11 @@ def redeem_dsc(token_collateral_address: address, amount_collateral: uint256, am
     self._redeem_collateral(token_collateral_address, amount_collateral, msg.sender, msg.sender)
     self._revert_if_health_factor_broken(msg.sender)
 
+@external
+def burn_dsc(amount_dsc_to_burn: uint256):
+    self._burn_dsc(amount_dsc_to_burn, msg.sender, msg.sender)
+    self._revert_if_health_factor_broken(msg.sender)
+
 # ------------------------------------------------------------------
 #                        INTERNAL FUNCTIONS
 # ------------------------------------------------------------------
