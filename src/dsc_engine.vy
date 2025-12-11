@@ -20,6 +20,7 @@ FEED_PRECISION: public(constant(uint256)) = 1 * (10**10)
 PRECISION: public(constant(uint256)) = 10 ** 18
 LIQUIDATION_THRESHOLD: public(constant(uint256)) = 50
 LIQUIDATION_PRECISION: public(constant(uint256)) = 100
+LIQUIDATION_BONUS: public(constant(uint256)) = 100
 MIN_HEALTH_FACTOR: public(constant(uint256)) = 1 * (10**18)
 token_to_price_feed: public(HashMap[address, address])
 user_to_token_to_amount_deposited: public(HashMap[address, HashMap[address, uint256]])
@@ -79,6 +80,19 @@ def redeem_dsc(token_collateral_address: address, amount_collateral: uint256, am
 @external
 def burn_dsc(amount_dsc_to_burn: uint256):
     self._burn_dsc(amount_dsc_to_burn, msg.sender, msg.sender)
+    self._revert_if_health_factor_broken(msg.sender)
+
+@external
+def liquidate(collateral_to_liquidate: address, user: address, debt_to_cover: uint256):
+    assert debt_to_cover > 0, "DSC Engine: Debt to cover must be greater than 0"
+    starting_health_factor: uint256 = self._health_factor(user)
+    assert starting_health_factor < MIN_HEALTH_FACTOR, "DSC Engine: User health factor is good"
+    token_amount_from_token_covered: uint256 = self._get_token_amount_from_usd(collateral_to_liquidate, debt_to_cover)
+    bonus_collateral: uint256 = token_amount_from_token_covered * LIQUIDATION_BONUS // LIQUIDATION_PRECISION
+    self._redeem_collateral(collateral_to_liquidate, token_amount_from_token_covered + bonus_collateral, user, msg.sender)
+    self._burn_dsc(debt_to_cover, user, msg.sender)
+    ending_health_factor: uint256 = self._health_factor(user)
+    assert ending_health_factor > starting_health_factor, "DSC Engine: User health factor didn't improve"
     self._revert_if_health_factor_broken(msg.sender)
 
 # ------------------------------------------------------------------
@@ -143,6 +157,14 @@ def _get_usd_value(token: address, amount: uint256) -> uint256:
     price_feed: AggregatorV3Interface = AggregatorV3Interface(self.token_to_price_feed[token])
     price: int256 = staticcall price_feed.latestAnswer()
     return ((convert(price, uint256) * FEED_PRECISION) * amount) // PRECISION
+
+@internal
+@view
+def _get_token_amount_from_usd(token: address, usd_amount: uint256) -> uint256:
+    price_feed: AggregatorV3Interface = AggregatorV3Interface(self.token_to_price_feed[token])
+    price: int256 = staticcall price_feed.latestAnswer()
+    return (usd_amount * PRECISION) // (convert(price, uint256) * FEED_PRECISION)
+    
         
 @internal
 def _health_factor(user:address) -> uint256:
