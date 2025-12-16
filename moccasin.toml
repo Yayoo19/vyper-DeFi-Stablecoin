@@ -9,6 +9,21 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["snekmate"]
 
+[networks.contracts.eth_usd_price_feed]
+deployer_script = "script/mocks/deploy_price_feed.py"
+
+[networks.contracts.btc_usd_price_feed]
+deployer_script = "script/mocks/deploy_price_feed.py"
+
+[networks.contracts.weth]
+deployer_script = "script/mocks/deploy_collateral.py"
+
+[networks.contracts.wbtc]
+deployer_script = "script/mocks/deploy_collateral.py"
+
+[networks.contracts.decentralized_stable_coin]
+deployer_script = "script/deploy_dsc.py"
+
 [networks.pyevm]
 is_zksync = false
 
