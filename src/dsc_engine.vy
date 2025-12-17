@@ -104,6 +104,38 @@ def get_token_amount_from_usd(token: address, usd_amount_in_wei: uint256) -> uin
 @view
 def get_usd_value(token: address, amount: uint256) -> uint256:
     return self._get_usd_value(token, amount)
+
+@external
+def health_factor(user: address) -> uint256:
+    return self._health_factor(user)
+
+@external
+def calculate_health_factor(
+    total_dsc_minted: uint256, collateral_value_in_usd: uint256
+) -> uint256:
+    return self._calculate_health_factor(
+        total_dsc_minted, collateral_value_in_usd
+    )
+
+
+@external
+def get_account_information(user: address) -> (uint256, uint256):
+    return self._get_account_information(user)
+
+@external
+def get_collateral_balance_of_user(user: address, token: address) -> uint256:
+    return self.user_to_token_to_amount_deposited[user][token]
+
+
+@external
+def get_account_collateral_value(user: address) -> uint256:
+    return self._get_account_collateral_value(user)
+
+@external
+@view
+def get_collateral_tokens() -> address[2]:
+    return COLLATERAL_TOKENS
+
 # ------------------------------------------------------------------
 #                        INTERNAL FUNCTIONS
 # ------------------------------------------------------------------
