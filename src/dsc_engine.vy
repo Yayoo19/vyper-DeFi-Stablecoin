@@ -95,6 +95,15 @@ def liquidate(collateral_to_liquidate: address, user: address, debt_to_cover: ui
     assert ending_health_factor > starting_health_factor, "DSC Engine: User health factor didn't improve"
     self._revert_if_health_factor_broken(msg.sender)
 
+@external
+@view
+def get_token_amount_from_usd(token: address, usd_amount_in_wei: uint256) -> uint256:
+    return self._get_token_amount_from_usd(token, usd_amount_in_wei)
+
+@external
+@view
+def get_usd_value(token: address, amount: uint256) -> uint256:
+    return self._get_usd_value(token, amount)
 # ------------------------------------------------------------------
 #                        INTERNAL FUNCTIONS
 # ------------------------------------------------------------------
